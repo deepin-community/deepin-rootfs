@@ -4,6 +4,27 @@
 
 # 方式一
 
+原debootstrap是没有beige代号的，需要从deepin-community的包来使用。
+
+这里从ci仓库从下载
+
+```bash
+# 需要使用dget指令，先安装devscripts
+sudo apt install devscripts
+dget https://ci.deepin.com/repo/obs/deepin:/Develop:/community/deepin_develop/debootstrap_1.0.128%2Bnmu2deepin%2Bu001.dsc
+# 解压源码
+dpkg-source -x debootstrap_1.0.128%2Bnmu2deepin%2Bu001.dsc
+cd debootstrap-1.0.128+nmu2deepin+u001
+# 安装依赖
+sudo apt build-dep .
+# 打包
+dpkg-buildpackage -us -uc -b
+# 安装
+sudo apt install ../*.deb
+```
+
+
+
 通过debootstrap来安装，这里选择版本beige
 
 ```bash
