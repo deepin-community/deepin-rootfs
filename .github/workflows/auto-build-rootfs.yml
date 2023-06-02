@@ -1,0 +1,24 @@
+name: build rootfs
+
+on: [push]
+
+jobs:
+  debootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone deepin-community/debootstrap repository 
+        uses: actions/checkout@v2
+        with:
+          repository: deepin-community/debootstrap # 克隆debootstrap仓库
+          path: debootstrap # 要克隆到debootstrap目录
+      - name: Install debootstrap from deepin-community/debootstrap repository
+        run: cd debootstrap && sudo make install # 进入debootstrap目录并安装debootstrap工具
+      - name: Run debootstrap
+        run: sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt beige ./deepin-rootfs http://packages.deepin.com/deepin beige # 一个步骤执行的命令，这里表示运行debootstrap指令
+      - name: Create tar file
+        run: sudo tar -cf deepin-rootfs.tar deepin-rootfs # 把根文件系统打包成一个tar文件
+      - name: Upload tar file
+        uses: actions/upload-artifact@v2 # 上传生成的文件
+        with:
+          name: deepin-rootfs.tar # 文件的名字
+          path: deepin-rootfs.tar # 文件的路径
