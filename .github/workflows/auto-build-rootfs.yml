@@ -4,7 +4,8 @@ on:
   schedule:
     - cron: '0 0 * * *' # 每天早上 0 点触发
   push:
-    tags: '*'
+    branches: [ '*' ]
+    tags: [ '*' ]
   workflow_dispatch:
 
 jobs:
@@ -34,6 +35,8 @@ jobs:
     name: Create release and upload file
     needs: build-tar # 等待 build-tar 的 job 完成
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download tar file from artifact
         uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
@@ -45,8 +48,6 @@ jobs:
           tag_name: v1.0.0
           github_token: ${{ secrets.GITHUB_TOKEN }}
           delete_release: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create release
         uses: actions/create-release@v1
         id: create_release
@@ -56,8 +57,6 @@ jobs:
           tag_name: v1.0.0
           release_name: v1.0.0
           overwrite: true # 覆盖同名的 release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download wsl.exe file from wsldl project
         run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl.exe
       - name: Zip deepin.tar and deepin.exe
@@ -69,5 +68,3 @@ jobs:
           asset_path: deepin.zip
           asset_name: deepin.zip
           asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
