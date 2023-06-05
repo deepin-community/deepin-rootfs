@@ -23,8 +23,6 @@ dpkg-buildpackage -us -uc -b
 sudo apt install ../*.deb
 ```
 
-
-
 通过debootstrap来安装，这里选择版本beige
 
 ```bash
@@ -63,3 +61,9 @@ tar -cvpf /tmp/rootfs.tar --directory=/ --exclude=proc --exclude=sys --exclude=d
 [通过tar命令将现有的系统打包成docker容器，用于构建镜像文件](https://blog.csdn.net/henni_719/article/details/81009449)
 
 [debootstrap构建自己的debian系统](https://blog.csdn.net/Zhang_Pro/article/details/108414727)
+
+# 声明
+
+本release使用了以下文件：
+
+- wsldl.exe: 来自[yuk7/wsldl](https://github.com/yuk7/wsldl)仓库的[release](https://github.com/yuk7/wsldl/releases/download/21082800/wsldl.exe)，使用MIT许可证。
