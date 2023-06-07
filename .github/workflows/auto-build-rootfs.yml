@@ -40,12 +40,20 @@ jobs:
         uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
         with:
           name: deepin-rootfs.tar
-      - name: Delete tag and release
-        uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-          tag_name: v1.0.0
-          github_token: ${{ secrets.ACTION_TOKEN }}
-          delete_release: true
+      - name: Check and delete release
+        run: |
+          id=$(curl -L \
+          -X GET \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/chenchongbiao/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v1.0.0") | .id')
+          curl -L \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/chenchongbiao/deepin-rootfs/releases/$id
       - name: Create release
         uses: softprops/action-gh-release@v1
         id: create_release
