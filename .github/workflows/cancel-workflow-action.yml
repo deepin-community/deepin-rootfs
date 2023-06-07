@@ -1,0 +1,14 @@
+name: Cancel
+on:
+  workflow_dispatch:
+jobs:
+  cancel:
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+    name: 'Cancel Previous Runs'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          workflow_id: auto-build-rootfs.yml,backup-to-gitlab.yml
+          access_token: ${{ secrets.ACTION_TOKEN }}
