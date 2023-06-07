@@ -23,7 +23,7 @@ jobs:
       - name: Run debootstrap
         run: sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt beige ./deepin-rootfs https://community-packages.deepin.com/beige beige
       - name: Create tar file
-        run: sudo tar -cf deepin-rootfs.tar deepin-rootfs # 把根文件系统打包成一个tar文件
+        run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file
         uses: actions/upload-artifact@v2 # 上传生成的文件
         with:
