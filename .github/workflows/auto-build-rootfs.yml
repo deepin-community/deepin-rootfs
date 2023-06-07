@@ -53,7 +53,7 @@ jobs:
           draft: false
           prerelease: false
           tag_name: v1.0.0
-          release_name: v1.0.0
+          name: v1.0.0
       - name: Download wsl.exe file from wsldl project
         run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl.exe
       - name: Zip deepin.tar and deepin.exe
