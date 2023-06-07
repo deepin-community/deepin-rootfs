@@ -30,26 +30,24 @@ jobs:
           name: deepin-rootfs.tar # 文件的名字
           path: deepin-rootfs.tar # 文件的路径
   create-release:
-    permissions:
-      contents: write
     name: Create release and upload file
     needs: build-tar # 等待 build-tar 的 job 完成
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
     steps:
       - name: Download tar file from artifact
         uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
         with:
           name: deepin-rootfs.tar
       - name: Delete tag and release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.1
+        uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
           tag_name: v1.0.0
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.ACTION_TOKEN }}
           delete_release: true
       - name: Create release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         id: create_release
         with:
           draft: false
