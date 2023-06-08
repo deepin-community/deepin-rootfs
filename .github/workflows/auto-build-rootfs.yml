@@ -21,7 +21,7 @@ jobs:
       - name: Install debootstrap from deepin-community/debootstrap repository
         run: cd debootstrap && sudo make install
       - name: Run debootstrap
-        run: sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt beige ./deepin-rootfs https://community-packages.deepin.com/beige beige
+        run: sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt --components=main,commercial,community beige ./deepin-rootfs https://community-packages.deepin.com/beige
       - name: Create tar file
         run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file
