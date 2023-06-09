@@ -19,6 +19,8 @@
 
 # 获取根文件系统
 
+如果想自己创建根文件系统可以参考以下方式，release已经提供了而根文件系统的tar包，以及wsldl的可执行程序。
+
 ## 方式一
 
 原debootstrap是没有beige代号的，需要从deepin-community的包来使用。
@@ -43,20 +45,19 @@ sudo apt install ../*.deb
 通过debootstrap来安装，这里选择版本beige
 
 ```bash
-sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt beige ./deepin-rootfs https://community-packages.deepin.com/beige beige
+sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt --components=main,commercial,community beige ./deepin-rootfs
 ```
 
 * –arch=amd64：表示指定目标系统的架构为amd64。
 * –include=systemd,dbus,locales,apt：表示指定额外安装一些软件包，用逗号分隔。
+* --components=main,commercial,community：需要包含的组件，否则默认只有main，这样有些软件就无法下载。
 * beige：表示指定安装的发行版为beige。
 * ./deepin-rootfs：表示指定安装的目标目录为当前目录下的deepin-rootfs文件夹。
-* https://community-packages.deepin.com/beige/：表示指定安装的软件包来源的仓库。
 
 使用tar命令将解压后的目录打包成一个tar文件
 
 ```bash
-cd deepin-rootfs
-sudo tar -cf rootfs.tar *
+sudo tar -cf deepin-rootfs.tar -C deepin-rootfs .
 ```
 
 当前目录会生成rootfs.tar文件。
@@ -75,14 +76,12 @@ tar -cvpf /tmp/rootfs.tar --directory=/ --exclude=proc --exclude=sys --exclude=d
 
 # 使用
 
-## wsl
-
-### 将tar导入
+## 将tar导入
 
 从releases中下载压缩包[deepin.zip](https://github.com/chenchongbiao/deepin-rootfs/releases/download/untagged-484bdf5b00538d9f22f6/deepin.zip)，在解压后的文件夹打开终端。
 
 ```bash
-./deepin.exe install rootfs.tar
+./deepin.exe install deepin-rootfs.tar
 ```
 
 等待安装完成。
@@ -99,23 +98,18 @@ wsl -l
 ./deepin.exe 或 wsl -d deepin
 ```
 
-deepin.exe是使用yuk7提供的，[wsldl的可执行文件](https://github.com/yuk7/wsldl/releases/tag/22020900)，将可执行文件重命名为需要安装的发行版的名字，详细使用方法参考[yuk7/wsldl](https://github.com/yuk7/wsldl#wsldl)
-
-## docker
-
-从releases中下载压缩包[deepin.zip](https://github.com/chenchongbiao/deepin-rootfs/releases/download/untagged-484bdf5b00538d9f22f6/deepin.zip)，在解压后的文件夹打开终端。
+如果安装了多个发行版可以通过一下指令设置默认发行版。
 
 ```bash
-cat rootfs.tar | sudo docker import - deepin:v23
+wsl -s deepin
 ```
 
-将rootfs.tar导入到docker中，镜像名为deepin:v23，可以自己修改。
+这样直接使用 `wsl`指令就可以直接启动deepin了。
 
-```bash
-sudo docker run --name v23 -itd deepin:v23 bash
-```
+deepin.exe是使用yuk7提供的[wsldl的可执行文件](https://github.com/yuk7/wsldl/releases/tag/22020900)，将可执行文件重命名为需要安装的发行版的名字，详细使用方法参考[yuk7/wsldl](https://github.com/yuk7/wsldl#wsldl)
 
-运行容器。
+## 配置语言环境
+
 
 # 参考
 
