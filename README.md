@@ -108,8 +108,68 @@ wsl -s deepin
 
 deepin.exe是使用yuk7提供的[wsldl的可执行文件](https://github.com/yuk7/wsldl/releases/tag/22020900)，将可执行文件重命名为需要安装的发行版的名字，详细使用方法参考[yuk7/wsldl](https://github.com/yuk7/wsldl#wsldl)
 
+## 添加用户
+
+```bash
+useradd -m deepin -s /usr/bin/bash
+```
+
+添加一个名为deepin的用户，设置默认shell为bash。
+
+```bash
+passwd deepin
+```
+
+设置密码，设置密码时不会显示，输入完毕后直接回车。
+
+```bash
+usermod -aG sudo deepin
+```
+
+添加deepin用户到sudo用户组。
+
+## 开启systemd支持
+
+```bash
+cat >> /etc/wsl.conf << EOF
+[boot]
+systemd=true
+EOF
+```
+
+ 输入exit退出。
+
+```
+wsl -t deepin
+```
+
+停止运行wsl，需要重启wsl才能生效。
+
+```bash
+wsl -d deepin
+```
+
+重新进入。
+
+## 设置wsl的默认用户
+
+```bash
+./deepin.exe config --default-user deepin
+```
+
+在deepin.exe所在目录打开终端，执行指令，设置deepin为默认用户。这样进入wsl就是默认deepin用户。
+
 ## 配置语言环境
 
+```bash
+sudo dpkg-reconfigure locales
+```
+
+默认语言环境是英文，需要修改的话，可以用这个指令重新设置。
+
+需要三次回车，输入312，对应选项zh_CN.UTF-8。再输入一次3，对应选项zh_CN.UTF-8。
+
+需要退出，重启wsl才能生效。
 
 # 参考
 
