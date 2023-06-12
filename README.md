@@ -171,6 +171,160 @@ sudo dpkg-reconfigure locales
 
 需要退出，重启wsl才能生效。
 
+# 应用软件
+
+### 公共
+
+#### 需安装的包
+
+- fonts-noto-cjk：字体库，如果不安装可能导致软件字体不正常。
+- dde-qt5integration：deepin应用程序和deepin桌面环境的Qt5主题集成插件。它在Qt的基础上实现了许多额外的功能，比如窗口装饰、阴影绘制、高分辨率下的光标支持、当前工作区的窗口列表获取等。
+- dde-qt5wayland-plugin：Qt 5 模块，它提供了一些插件和库，用于在 Wayland 上运行或创建 Qt 应用程序。
+
+```bash
+sudo apt install fonts-noto-cjk dde-qt5integration dde-qt5wayland-plugin
+```
+
+#### 已知问题
+
+- 安装完dde-qt5integration后，在X11模式下应用的设置项无法出现在正确的位置上。
+- X11模式下全屏并不能占满整个屏幕。
+
+### 深度终端
+
+```bash
+sudo apt install deepin-terminal
+```
+
+输入上面的指令安装应用。
+
+需要退出容器重启。使用 `wsl -t deepin` 。
+
+```bash
+deepin-terminal
+```
+
+运行软件。
+
+### 看图
+
+```bash
+sudo apt install deepin-image-viewer
+```
+
+输入上面的指令安装应用。
+
+```bash
+deepin-image-viewer
+```
+
+运行软件。
+
+### 浏览器
+
+```bash
+sudo apt install org.deepin.browser
+```
+
+输入上面的指令安装应用。
+
+```bash
+browser
+```
+
+运行软件。
+
+已知问题：
+
+- 部分页面的链接 图标 字体缺失或者乱码。
+
+### 文件管理器
+
+```bash
+sudo apt install dde-file-manager
+```
+
+输入上面的指令安装应用。
+
+```bash
+dde-file-manager
+```
+
+运行软件。
+
+已知问题：
+
+- 不受平台插件管理，出现设置选项位置偏移。
+- 无法主题图标。
+
+### 深度音乐
+
+```bash
+sudo apt install deepin-music
+```
+
+输入上面的指令安装应用。
+
+```bash
+deepin-music
+```
+
+运行软件。
+
+已知问题：
+
+- 无法运行
+
+### 深度影院
+
+```bash
+sudo apt install deepin-movie
+```
+
+输入上面的指令安装应用。
+
+```bash
+deepin-movie
+```
+
+运行软件。
+
+已知问题：
+
+- 无法运行
+
+### 深度相册
+
+```bash
+sudo apt install deepin-album
+```
+
+输入上面的指令安装应用。
+
+```bash
+deepin-album
+```
+
+运行软件。
+
+已知问题：
+
+- 运行卡顿。
+
+### 深度画板
+
+```bash
+sudo apt install deepin-draw
+```
+
+输入上面的指令安装应用。
+
+```bash
+deepin-draw
+```
+
+运行软件。
+
 # 参考
 
 [通过tar命令将现有的系统打包成docker容器，用于构建镜像文件](https://blog.csdn.net/henni_719/article/details/81009449)
