@@ -45,7 +45,7 @@ sudo apt install ../*.deb
 通过debootstrap来安装，这里选择版本beige
 
 ```bash
-sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt --components=main,commercial,community beige ./deepin-rootfs
+sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt,sudo --components=main,commercial,community beige ./deepin-rootfs
 ```
 
 * –arch=amd64：表示指定目标系统的架构为amd64。
