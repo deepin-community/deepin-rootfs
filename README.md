@@ -78,7 +78,7 @@ tar -cvpf /tmp/rootfs.tar --directory=/ --exclude=proc --exclude=sys --exclude=d
 
 ## 将tar导入
 
-从releases中下载压缩包[deepin.zip](https://github.com/chenchongbiao/deepin-rootfs/releases/download/untagged-484bdf5b00538d9f22f6/deepin.zip)，在解压后的文件夹打开终端。
+从releases中下载压缩包[deepin.zip](https://github.com/deepin-community/deepin-rootfs/releases/download/v1.0.0/deepin.zip)，在解压后的文件夹打开终端。
 
 ```bash
 ./deepin.exe install deepin-rootfs.tar
@@ -198,7 +198,7 @@ sudo apt install deepin-terminal
 
 输入上面的指令安装应用。
 
-需要退出容器重启。使用 `wsl -t deepin` 。
+需要输入exit退出容器。使用 `wsl -t deepin` 关闭deepin wsl，输入 `wsl` 中心进入，输入一下指令启动。
 
 ```bash
 deepin-terminal
