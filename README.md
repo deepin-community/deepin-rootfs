@@ -17,6 +17,19 @@
   - `wsl --update`
   - `wsl --set-default-version 2`
 
+# 开启虚拟化及子系统功能支持
+
+除了在控制面板手动开启“适用于Linux的Windows子系统”和“虚拟机平台”功能外，也可以使用命令行开启。在Windows菜单栏找到cmd,选择管理员身份运行。
+
+```bash
+wsl --install
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+wsl --update
+```
+
+输入完成之后建议重启。
+
 # 获取根文件系统
 
 如果想自己创建根文件系统可以参考以下方式，release已经提供了而根文件系统的tar包，以及wsldl的可执行程序。
