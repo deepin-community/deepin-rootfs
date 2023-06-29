@@ -30,11 +30,9 @@ jobs:
           sudo mount -t sysfs /sys deepin-rootfs/sys
           sudo mount -o bind /dev deepin-rootfs/dev
           sudo mount -o bind /dev/pts deepin-rootfs/dev/pts
-      - name: Chroot and basic configuration
+      - name: Chroot and debootstrap stage2
         run: |
-          sudo chroot deepin-rootfs
-          debootstrap/debootstrap --second-stage
-          exit
+          sudo chroot deepin-rootfs /debootstrap/debootstrap --second-stage
       - name: Umounting 
         run: |
           sudo umount deepin-rootfs/proc
