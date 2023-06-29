@@ -8,11 +8,11 @@
 
   - 对于 x64 系统：版本 1903 或更高版本，内部版本 18362 或更高版本。
   - 对于 ARM64 系统：版本 2004 或更高版本，内部版本 19041 或更高版本。
-- 使用WSL 需要开启虚拟化。这里使用virtualbox安装windows11虚拟机。
+- 使用WSL 需要开启虚拟化。这里使用Vmware17安装Windows11虚拟机。(使用QEMU、Virtualbox、Vmware16版本即使打开了嵌套虚拟化的选项运行WSL还是提示没有开启虚拟化)
 
   - 在控制面板，程序开启和关闭，打开“适用于Linux的Windows子系统”和“虚拟机平台”两个可选功能。
-  - 在virtualbox安装windows虚拟机，需要在设置中为windows虚拟机启用嵌套虚拟化，即勾选“启用VT-x/AMD-V”和“启用嵌套分页”选项。
-- 安装wsl（使用wsl2)
+  - 需要在Vmware设置中为Windows虚拟机启用嵌套虚拟化，即勾选“启用VT-x/AMD-V”和“启用嵌套分页”选项。
+- 安装WSL（使用WSL)
 
   - `wsl --update`
   - `wsl --set-default-version 2`
