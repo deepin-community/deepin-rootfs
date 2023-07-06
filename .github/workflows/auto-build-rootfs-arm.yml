@@ -24,21 +24,13 @@ jobs:
         run: cd debootstrap && sudo make install
       - name: Run debootstrap stage1
         run: sudo debootstrap --arch=amd64 --foreign --include=systemd,dbus,locales,apt,sudo --components=main,commercial,community beige ./deepin-rootfs https://community-packages.deepin.com/beige
-      - name: Mount base dirs
+      - name: Chroot and debootstrap stage2
         run: |
           sudo mount -t proc /proc deepin-rootfs/proc
           sudo mount -t sysfs /sys deepin-rootfs/sys
           sudo mount -o bind /dev deepin-rootfs/dev
           sudo mount -o bind /dev/pts deepin-rootfs/dev/pts
-      - name: Chroot and debootstrap stage2
-        run: |
           sudo chroot deepin-rootfs /debootstrap/debootstrap --second-stage
-      - name: Umounting 
-        run: |
-          sudo umount deepin-rootfs/proc
-          sudo umount deepin-rootfs/sys
-          sudo umount deepin-rootfs/dev/pts
-          sudo umount deepin-rootfs/dev
       - name: Create tar file
         run: sudo tar -cf deepin-rootfs-arm.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file
