@@ -16,14 +16,14 @@ jobs:
       - name: Clone deepin-community/debootstrap repository 
         uses: actions/checkout@v2
         with:
-          repository: deepin-community/debootstrap # 克隆debootstrap仓库
-          path: debootstrap # 要克隆到debootstrap目录
-      - name: Install debootstrap from deepin-community/debootstrap repository
-        run: cd debootstrap && sudo make install
-      - name: Run debootstrap
-        run: sudo debootstrap --arch=amd64 --include=systemd,dbus,locales,apt,sudo --components=main,commercial,community beige ./deepin-rootfs https://community-packages.deepin.com/beige
+          repository: chenchongbiao/deepin-docker # 克隆deepin-docker仓库
+          path: deepin-docker # 要克隆到deepin-docker目录
+      - name: Run build.sh
+        run: |
+          cd $GITHUB_WORKSPACE/deepin-docker
+          sudo ./build.sh
       - name: Create tar file
-        run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
+        run: sudo tar -cf deepin-rootfs.tar -C /beige-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file
         uses: actions/upload-artifact@v2 # 上传生成的文件
         with:
