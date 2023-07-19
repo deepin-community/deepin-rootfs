@@ -32,12 +32,12 @@ jobs:
           sudo mount -o bind /dev/pts deepin-rootfs/dev/pts
           sudo chroot deepin-rootfs /debootstrap/debootstrap --second-stage
       - name: Create tar file
-        run: sudo tar -cf deepin-rootfs-arm.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
+        run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file
         uses: actions/upload-artifact@v2 # 上传生成的文件
         with:
-          name: deepin-rootfs-arm.tar # 文件的名字
-          path: deepin-rootfs-arm.tar # 文件的路径
+          name: deepin-rootfs.tar # 文件的名字
+          path: deepin-rootfs.tar # 文件的路径
   create-release:
     name: Create release and upload file
     needs: build-tar # 等待 build-tar 的 job 完成
@@ -48,7 +48,7 @@ jobs:
       - name: Download tar file from artifact
         uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
         with:
-          name: deepin-rootfs-arm.tar
+          name: deepin-rootfs.tar
       - name: Check and delete release
         run: |
           id=$(curl -L \
@@ -69,16 +69,16 @@ jobs:
         with:
           draft: false
           prerelease: false
-          tag_name: v1.0.0
-          name: v1.0.0
+          tag_name: v1.0.0-arm
+          name: v1.0.0-arm
       - name: Download wsl.exe file from wsldl project
-        run: curl -L -o deepin-arm.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl_arm64.exe
-      - name: Zip deepin-arm.tar and deepin-arm.exe
-        run: zip -r deepin-arm.zip deepin-rootfs-arm.tar deepin-arm.exe
+        run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl_arm64.exe
+      - name: Zip deepin.tar and deepin.exe
+        run: zip -r deepin.zip deepin-rootfs.tar deepin.exe
       - name: Upload zip file to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: deepin-arm.zip
-          asset_name: deepin-arm.zip
+          asset_path: deepin.zip
+          asset_name: deepin.zip
           asset_content_type: application/zip
