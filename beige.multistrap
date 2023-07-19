@@ -1,0 +1,17 @@
+[General]
+
+arch=amd64
+directory=/beige-rootfs
+cleanup=true
+noauth=false
+unpack=true
+explicitsuite=false
+multiarch=
+aptsources=Debian
+bootstrap=Deepin
+
+[Deepin]
+
+packages=apt ca-certificates locales sudo systemd
+source=https://community-packages.deepin.com/beige/
+suite=beige

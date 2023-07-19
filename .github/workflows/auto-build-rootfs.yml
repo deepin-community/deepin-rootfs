@@ -13,15 +13,11 @@ jobs:
     name: Build tar file
     runs-on: ubuntu-latest
     steps:
-      - name: Clone deepin-community/debootstrap repository 
+      - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          repository: chenchongbiao/deepin-docker # 克隆deepin-docker仓库
-          path: deepin-docker # 要克隆到deepin-docker目录
       - name: Run build.sh
         run: |
-          cd $GITHUB_WORKSPACE/deepin-docker
-          sudo ./build.sh
+          sudo bash ${{ github.workspace }}/build.sh 
       - name: Create tar file
         run: sudo tar -cf deepin-rootfs.tar -C /beige-rootfs . # 把根文件系统打包成一个tar文件
       - name: Upload tar file

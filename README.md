@@ -346,6 +346,8 @@ deepin-draw
 
 [WSL安装deepin](https://github.com/chenchongbiao/os-study/tree/master/dev-env/wsl)
 
+[deepin-docker](https://github.com/BLumia/deepin-docker)
+
 # 声明
 
 本release使用了以下文件：
