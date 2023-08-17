@@ -141,6 +141,16 @@ usermod -aG sudo deepin
 
 添加deepin用户到sudo用户组。
 
+## 设置wsl的默认用户
+
+`exit` 退出到 win 系统。
+
+```bash
+./deepin.exe config --default-user deepin
+```
+
+在deepin.exe所在目录打开终端，执行指令，设置deepin为默认用户。这样进入wsl就是默认deepin用户。
+
 ## 开启systemd支持
 
 ```bash
@@ -163,14 +173,6 @@ wsl -d deepin
 ```
 
 重新进入。
-
-## 设置wsl的默认用户
-
-```bash
-./deepin.exe config --default-user deepin
-```
-
-在deepin.exe所在目录打开终端，执行指令，设置deepin为默认用户。这样进入wsl就是默认deepin用户。
 
 ## 配置语言环境
 
