@@ -12,6 +12,6 @@ bootstrap=Deepin
 
 [Deepin]
 
-packages=apt ca-certificates locales sudo systemd
+packages=apt ca-certificates locales-all sudo systemd
 source=https://community-packages.deepin.com/beige/
 suite=beige
