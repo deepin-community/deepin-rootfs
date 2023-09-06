@@ -1,13 +1,13 @@
-name: build rootfs
+name: build rootfs x86
 
-on:
+# on:
   # schedule:
   #   - cron: '0 0 * * *' # 每天早上 0 点触发
-  push:
-    branches: [ 'master' ]
-  pull_request:
-    branches: [ 'master' ]
-  workflow_dispatch:
+  # push:
+  #   branches: [ 'master' ]
+  # pull_request:
+  #   branches: [ 'master' ]
+  # workflow_dispatch:
 
 jobs:
   build-tar:

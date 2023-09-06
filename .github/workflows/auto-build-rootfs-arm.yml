@@ -1,12 +1,12 @@
 name: build rootfs arm
 
-on:
-  schedule:
-    - cron: '0 0 * * *' # 每天早上 0 点触发
-  push:
-    branches: [ '*' ]
-    tags: [ '*' ]
-  workflow_dispatch:
+# on:
+  # schedule:
+  #   - cron: '0 0 * * *' # 每天早上 0 点触发
+  # push:
+  #   branches: [ '*' ]
+  #   tags: [ '*' ]
+  # workflow_dispatch:
 
 jobs:
   build-tar:
