@@ -1,0 +1,67 @@
+name: build rootfs
+
+on:
+  push:
+    branches: [ 'master' ]
+  pull_request:
+    branches: [ 'master' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build tar file
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        arch: [ x64, arm64 ]
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run build.sh
+        run: |
+          sudo bash ${{ github.workspace }}/build.sh
+
+      - name: Create tar file
+        run: sudo tar -cf deepin-rootfs-${{ matrix.arch }}.tar.gz -C /beige-rootfs . # 把根文件系统打包成一个 tar.gz 文件
+
+      - name: Upload tar file
+        uses: actions/upload-artifact@v3 # 上传生成的文件
+        with:
+          name: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的名字
+          path: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的路径
+
+      - name: Check and delete release
+        run: |
+          id=$(curl -L \
+          -X GET \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v${{ env.VERSION }}") | .id')
+          curl -L \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/deepin-community/deepin-rootfs/releases/$id
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          tag_name: v${{ env.VERSION }}
+          name: v${{ env.VERSION }}
+
+      - name: Upload file to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: deepin-rootfs-${{ matrix.arch }}.tar.gz
+          asset_name: deepin-rootfs-${{ matrix.arch }}.tar.gz
+          asset_content_type: application/gzip
