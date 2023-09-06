@@ -1,11 +1,12 @@
 name: build rootfs
 
 on:
-  schedule:
-    - cron: '0 0 * * *' # 每天早上 0 点触发
+  # schedule:
+  #   - cron: '0 0 * * *' # 每天早上 0 点触发
   push:
-    branches: [ '*' ]
-    tags: [ '*' ]
+    branches: [ 'master' ]
+  pull_request:
+    branches: [ 'master' ]
   workflow_dispatch:
 
 jobs:
@@ -14,17 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Run build.sh
         run: |
-          sudo bash ${{ github.workspace }}/build.sh 
+          sudo bash ${{ github.workspace }}/build.sh
       - name: Create tar file
-        run: sudo tar -cf deepin-rootfs.tar -C /beige-rootfs . # 把根文件系统打包成一个tar文件
+        run: sudo tar -cf deepin-rootfs.tar.gz -C /beige-rootfs . # 把根文件系统打包成一个 tar.gz 文件
       - name: Upload tar file
-        uses: actions/upload-artifact@v2 # 上传生成的文件
+        uses: actions/upload-artifact@v3 # 上传生成的文件
         with:
-          name: deepin-rootfs.tar # 文件的名字
-          path: deepin-rootfs.tar # 文件的路径
+          name: deepin-rootfs.tar.gz # 文件的名字
+          path: deepin-rootfs.tar.gz # 文件的路径
   create-release:
     name: Create release and upload file
     needs: build-tar # 等待 build-tar 的 job 完成
@@ -32,10 +33,15 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Read version
+        id: read_version
+        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
       - name: Download tar file from artifact
-        uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
+        uses: actions/download-artifact@v3 # 从 artifact 区域下载文件
         with:
-          name: deepin-rootfs.tar
+          name: deepin-rootfs.tar.gz
       - name: Check and delete release
         run: |
           id=$(curl -L \
@@ -43,7 +49,7 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v1.0.0-x86") | .id')
+          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v${{ env.VERSION }}-x86") | .id')
           curl -L \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -56,16 +62,16 @@ jobs:
         with:
           draft: false
           prerelease: false
-          tag_name: v1.0.0-x86
-          name: v1.0.0-x86
+          tag_name: v${{ env.VERSION }}-x86
+          name: v${{ env.VERSION }}-x86
       - name: Download wsl.exe file from wsldl project
         run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl.exe
-      - name: Zip deepin.tar and deepin.exe
-        run: zip -r deepin.zip deepin-rootfs.tar deepin.exe
+      - name: Zip deepin.tar.gz and deepin.exe
+        run: zip -r deepinWSL-wsldl.zip deepin-rootfs.tar.gz deepin.exe
       - name: Upload zip file to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: deepin.zip
-          asset_name: deepin.zip
+          asset_path: deepinWSL-wsldl.zip
+          asset_name: deepinWSL-wsldl.zip
           asset_content_type: application/zip
