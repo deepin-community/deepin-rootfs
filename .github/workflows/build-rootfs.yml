@@ -42,7 +42,7 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v${{ env.VERSION }}") | .id')
+          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v${{ env.VERSION }}-${{ matrix.arch }}") | .id')
           curl -L \
             -X DELETE \
             -H "Accept: application/vnd.github+json" \
@@ -50,19 +50,13 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/deepin-community/deepin-rootfs/releases/$id
 
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          tag_name: v${{ env.VERSION }}
-          name: v${{ env.VERSION }}
-
       - name: Upload file to release
-        uses: actions/upload-release-asset@v1
+        uses: "softprops/action-gh-release@v1"
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: deepin-rootfs-${{ matrix.arch }}.tar.gz
-          asset_name: deepin-rootfs-${{ matrix.arch }}.tar.gz
-          asset_content_type: application/gzip
+          tag_name: v${{ env.VERSION }}-${{ matrix.arch }}
+          name: v${{ env.VERSION }}-${{ matrix.arch }}
+          body: "创建新的 deepin-rootfs"
+          draft: false
+          prerelease: true
+          files: |
+            deepin-rootfs-${{ matrix.arch }}.tar.gz
