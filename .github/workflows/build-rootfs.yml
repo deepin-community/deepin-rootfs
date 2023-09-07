@@ -16,7 +16,6 @@ jobs:
         arch: [ x64, arm64 ]
     env:
       GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
-      VERSION: 1.1.0
 
     steps:
       - name: Checkout repository
@@ -34,6 +33,10 @@ jobs:
         with:
           name: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的名字
           path: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的路径
+
+      - name: Read version
+        id: read_version
+        run: echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
 
       - name: Check and delete release
         run: |
