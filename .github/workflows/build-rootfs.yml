@@ -12,10 +12,11 @@ jobs:
     name: Build tar file
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
+      matrix:
         arch: [ x64, arm64 ]
     env:
       GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+      VERSION: 1.1.0
 
     steps:
       - name: Checkout repository
