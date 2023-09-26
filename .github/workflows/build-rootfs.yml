@@ -23,7 +23,7 @@ jobs:
 
       - name: Run build.sh
         run: |
-          sudo bash ${{ github.workspace }}/build.sh
+          sudo bash ${{ github.workspace }}/build.sh ${{ matrix.arch }}
 
       - name: Create tar file
         run: sudo tar -cf deepin-rootfs-${{ matrix.arch }}.tar.gz -C /beige-rootfs . # 把根文件系统打包成一个 tar.gz 文件

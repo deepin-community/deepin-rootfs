@@ -1,19 +1,19 @@
 name: build rootfs arm
 
 # on:
-  # schedule:
-  #   - cron: '0 0 * * *' # 每天早上 0 点触发
-  # push:
-  #   branches: [ '*' ]
-  #   tags: [ '*' ]
-  # workflow_dispatch:
+#   schedule:
+#     - cron: '0 0 * * *' # 定时触发
+#   push:
+#     branches: [ '*' ]
+#     tags: [ '*' ]
+#   workflow_dispatch:
 
 jobs:
   build-tar:
     name: Build tar file
     runs-on: ubuntu-latest
     steps:
-      - name: Clone deepin-community/debootstrap repository 
+      - name: Clone deepin-community/debootstrap repository
         uses: actions/checkout@v2
         with:
           repository: deepin-community/debootstrap # 克隆debootstrap仓库
