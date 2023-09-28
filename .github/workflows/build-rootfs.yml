@@ -2,7 +2,7 @@ name: build rootfs
 
 on:
   push:
-    branches: [ 'master' ]
+    branches: [ 'master', 'dev' ]
   pull_request:
     branches: [ 'master' ]
   workflow_dispatch:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [ x64, arm64 ]
+        arch: [ amd64, arm64 ]
     env:
       GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
 
@@ -23,10 +23,11 @@ jobs:
 
       - name: Run build.sh
         run: |
-          sudo bash ${{ github.workspace }}/build.sh ${{ matrix.arch }}
-
-      - name: Create tar file
-        run: sudo tar -cf deepin-rootfs-${{ matrix.arch }}.tar.gz -C /beige-rootfs . # 把根文件系统打包成一个 tar.gz 文件
+          docker pull linuxdeepin/beige && \
+          docker run -id --name build linuxdeepin/beige && \
+          docker cp build.sh build:/build.sh && \
+          docker exec -i build /build.sh ${{ matrix.arch }} && \
+          docker cp build:/deepin-rootfs-${{ matrix.arch }}.tar.gz .
 
       - name: Upload tar file
         uses: actions/upload-artifact@v3 # 上传生成的文件
