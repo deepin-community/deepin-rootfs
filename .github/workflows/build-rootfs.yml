@@ -23,17 +23,7 @@ jobs:
 
       - name: Run build.sh
         run: |
-          docker pull linuxdeepin/beige && \
-          docker run -id --name build linuxdeepin/beige && \
-          docker cp build.sh build:/build.sh && \
-          docker exec -i build /build.sh ${{ matrix.arch }} && \
-          docker cp build:/deepin-rootfs-${{ matrix.arch }}.tar.gz .
-
-      - name: Upload tar file
-        uses: actions/upload-artifact@v3 # 上传生成的文件
-        with:
-          name: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的名字
-          path: deepin-rootfs-${{ matrix.arch }}.tar.gz # 文件的路径
+          sudo bash build.sh ${{ matrix.arch }}
 
       - name: Read version
         id: read_version
