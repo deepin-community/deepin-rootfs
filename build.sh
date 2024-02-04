@@ -1,41 +1,42 @@
 #!/bin/bash
 
-set -e
+set -e -u -x
 
-apt update
+sudo apt update
 
 # 不进行交互安装
 export DEBIAN_FRONTEND=noninteractive
+ROOTFS=`mktemp -d`
+dist_version="beige"
+dist_name="deepin"
+SOURCES_FILE=config/apt/sources.list
+PACKAGES_FILE=config/packages.list/packages.list
+readarray -t REPOS < $SOURCES_FILE
+PACKAGES=`cat $PACKAGES_FILE | grep -v "^-" | xargs | sed -e 's/ /,/g'`
+OUT_DIR=rootfs
 
-apt install multistrap -y
+mkdir -p $OUT_DIR
 
-mkdir -p /beige-rootfs/etc/apt/trusted.gpg.d
-cp deepin.gpg /beige-rootfs/etc/apt/trusted.gpg.d
+sudo apt update -y && sudo apt install -y curl git mmdebstrap qemu-user-static usrmerge systemd-container
+# 开启异架构支持
+sudo systemctl start systemd-binfmt
 
-arch=${1}
-echo -e "[General]\n\
-arch=$arch\n\
-directory=/beige-rootfs/\n\
-cleanup=true\n\
-noauth=false\n\
-unpack=true\n\
-explicitsuite=false\n\
-multiarch=\n\
-aptsources=Debian\n\
-bootstrap=Deepin\n\
-[Deepin]\n\
-packages=apt ca-certificates locales-all sudo systemd\n\
-source=https://community-packages.deepin.com/beige/\n\
-suite=beige\n\
-" >/beige.multistrap
-
-multistrap -f /beige.multistrap
-
-echo "deb     https://community-packages.deepin.com/beige/ beige main commercial community" > /beige-rootfs/etc/apt/sources.list && \
-echo "deb-src https://community-packages.deepin.com/beige/ beige main commercial community" >> /beige-rootfs/etc/apt/sources.list
-
-# 微软提供的 wsl 启动器会调用adduser,需要将 USERS_GID 和 USERS_GROUP 注释。
-sed -i -e 's/USERS_GID=100/#USERS_GID=100/' -e 's/USERS_GROUP=users/#USERS_GROUP=users/' /beige-rootfs/etc/adduser.conf
-
-# 生成压缩包
-tar -cf deepin-rootfs-$arch.tar.gz -C /beige-rootfs .
+for arch in amd64 arm64 riscv64 loong64 i386; do
+    sudo mmdebstrap \
+        --hook-dir=/usr/share/mmdebstrap/hooks/merged-usr \
+        --include=$PACKAGES \
+        --components="main,commercial,community" \
+        --variant=minbase \
+        --architectures=${arch} \
+        --customize=./config/hooks.chroot/second-stage \
+        $dist_version \
+        $ROOTFS \
+        "${REPOS[@]}"
+    # 生成压缩包
+    pushd $OUT_DIR
+    rm -rf $dist_name-rootfs-$arch.tar.gz
+    sudo tar -cf $dist_name-rootfs-$arch.tar.gz -C $ROOTFS .
+    # 删除临时文件夹
+    sudo rm -rf  $ROOTFS
+    popd
+done

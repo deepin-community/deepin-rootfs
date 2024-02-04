@@ -1,84 +1,84 @@
-name: build rootfs arm
+# name: build rootfs arm
 
-# on:
-#   schedule:
-#     - cron: '0 0 * * *' # 定时触发
-#   push:
-#     branches: [ '*' ]
-#     tags: [ '*' ]
-#   workflow_dispatch:
+# # on:
+# #   schedule:
+# #     - cron: '0 0 * * *' # 定时触发
+# #   push:
+# #     branches: [ '*' ]
+# #     tags: [ '*' ]
+# #   workflow_dispatch:
 
-jobs:
-  build-tar:
-    name: Build tar file
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone deepin-community/debootstrap repository
-        uses: actions/checkout@v2
-        with:
-          repository: deepin-community/debootstrap # 克隆debootstrap仓库
-          path: debootstrap # 要克隆到debootstrap目录
-      - name: Install qemu and binfmt support
-        run: sudo apt install qemu qemu-user-static binfmt-support
-      - name: Install debootstrap from deepin-community/debootstrap repository
-        run: cd debootstrap && sudo make install
-      - name: Run debootstrap stage1
-        run: sudo debootstrap --arch=amd64 --foreign --include=systemd,dbus,locales,apt,sudo --components=main,commercial,community beige ./deepin-rootfs https://community-packages.deepin.com/beige
-      - name: Chroot and debootstrap stage2
-        run: |
-          sudo mount -t proc /proc deepin-rootfs/proc
-          sudo mount -t sysfs /sys deepin-rootfs/sys
-          sudo mount -o bind /dev deepin-rootfs/dev
-          sudo mount -o bind /dev/pts deepin-rootfs/dev/pts
-          sudo chroot deepin-rootfs /debootstrap/debootstrap --second-stage
-      - name: Create tar file
-        run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
-      - name: Upload tar file
-        uses: actions/upload-artifact@v2 # 上传生成的文件
-        with:
-          name: deepin-rootfs.tar # 文件的名字
-          path: deepin-rootfs.tar # 文件的路径
-  create-release:
-    name: Create release and upload file
-    needs: build-tar # 等待 build-tar 的 job 完成
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
-    steps:
-      - name: Download tar file from artifact
-        uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
-        with:
-          name: deepin-rootfs.tar
-      - name: Check and delete release
-        run: |
-          id=$(curl -L \
-          -X GET \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v1.0.0-arm") | .id')
-          curl -L \
-            -X DELETE \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/deepin-community/deepin-rootfs/releases/$id
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          tag_name: v1.0.0-arm
-          name: v1.0.0-arm
-      - name: Download wsl.exe file from wsldl project
-        run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl_arm64.exe
-      - name: Zip deepin.tar and deepin.exe
-        run: zip -r deepin.zip deepin-rootfs.tar deepin.exe
-      - name: Upload zip file to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: deepin.zip
-          asset_name: deepin.zip
-          asset_content_type: application/zip
+# jobs:
+#   build-tar:
+#     name: Build tar file
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Clone deepin-community/debootstrap repository
+#         uses: actions/checkout@v2
+#         with:
+#           repository: deepin-community/debootstrap # 克隆debootstrap仓库
+#           path: debootstrap # 要克隆到debootstrap目录
+#       - name: Install qemu and binfmt support
+#         run: sudo apt install qemu qemu-user-static binfmt-support
+#       - name: Install debootstrap from deepin-community/debootstrap repository
+#         run: cd debootstrap && sudo make install
+#       - name: Run debootstrap stage1
+#         run: sudo debootstrap --arch=amd64 --foreign --include=systemd,dbus,locales,apt,sudo --components=main,commercial,community beige ./deepin-rootfs https://community-packages.deepin.com/beige
+#       - name: Chroot and debootstrap stage2
+#         run: |
+#           sudo mount -t proc /proc deepin-rootfs/proc
+#           sudo mount -t sysfs /sys deepin-rootfs/sys
+#           sudo mount -o bind /dev deepin-rootfs/dev
+#           sudo mount -o bind /dev/pts deepin-rootfs/dev/pts
+#           sudo chroot deepin-rootfs /debootstrap/debootstrap --second-stage
+#       - name: Create tar file
+#         run: sudo tar -cf deepin-rootfs.tar -C deepin-rootfs . # 把根文件系统打包成一个tar文件
+#       - name: Upload tar file
+#         uses: actions/upload-artifact@v2 # 上传生成的文件
+#         with:
+#           name: deepin-rootfs.tar # 文件的名字
+#           path: deepin-rootfs.tar # 文件的路径
+#   create-release:
+#     name: Create release and upload file
+#     needs: build-tar # 等待 build-tar 的 job 完成
+#     runs-on: ubuntu-latest
+#     env:
+#       GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+#     steps:
+#       - name: Download tar file from artifact
+#         uses: actions/download-artifact@v2 # 从 artifact 区域下载文件
+#         with:
+#           name: deepin-rootfs.tar
+#       - name: Check and delete release
+#         run: |
+#           id=$(curl -L \
+#           -X GET \
+#           -H "Accept: application/vnd.github+json" \
+#           -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
+#           -H "X-GitHub-Api-Version: 2022-11-28" \
+#           https://api.github.com/repos/deepin-community/deepin-rootfs/releases | jq '.[] | select(.tag_name == "v1.0.0-arm") | .id')
+#           curl -L \
+#             -X DELETE \
+#             -H "Accept: application/vnd.github+json" \
+#             -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}" \
+#             -H "X-GitHub-Api-Version: 2022-11-28" \
+#             https://api.github.com/repos/deepin-community/deepin-rootfs/releases/$id
+#       - name: Create release
+#         uses: softprops/action-gh-release@v1
+#         id: create_release
+#         with:
+#           draft: false
+#           prerelease: false
+#           tag_name: v1.0.0-arm
+#           name: v1.0.0-arm
+#       - name: Download wsl.exe file from wsldl project
+#         run: curl -L -o deepin.exe https://github.com/yuk7/wsldl/releases/download/21082800/wsldl_arm64.exe
+#       - name: Zip deepin.tar and deepin.exe
+#         run: zip -r deepin.zip deepin-rootfs.tar deepin.exe
+#       - name: Upload zip file to release
+#         uses: actions/upload-release-asset@v1
+#         with:
+#           upload_url: ${{ steps.create_release.outputs.upload_url }}
+#           asset_path: deepin.zip
+#           asset_name: deepin.zip
+#           asset_content_type: application/zip
