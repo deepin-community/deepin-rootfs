@@ -2,3 +2,4 @@ ca-certificates
 locales
 sudo
 apt
+adduser
