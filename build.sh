@@ -17,7 +17,7 @@ OUT_DIR=rootfs
 
 mkdir -p $OUT_DIR
 
-sudo apt update -y && sudo apt install -y curl git mmdebstrap qemu-user-static usrmerge systemd-container
+sudo apt update -y && sudo apt install -y curl git mmdebstrap qemu-user-static usrmerge systemd-container usrmerge
 # 开启异架构支持
 sudo systemctl start systemd-binfmt
 
@@ -35,7 +35,7 @@ for arch in amd64 arm64 riscv64 loong64 i386; do
     # 生成压缩包
     pushd $OUT_DIR
     rm -rf $dist_name-rootfs-$arch.tar.gz
-    sudo tar -cf $dist_name-rootfs-$arch.tar.gz -C $ROOTFS .
+    sudo tar -zcf $dist_name-rootfs-$arch.tar.gz -C $ROOTFS .
     # 删除临时文件夹
     sudo rm -rf  $ROOTFS
     popd
