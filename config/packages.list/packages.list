@@ -3,3 +3,6 @@ locales
 sudo
 apt
 adduser
+polkitd
+systemd
+dbus-daemon
