@@ -65,8 +65,10 @@ jobs:
           prerelease: true
           title: "v${{ env.VERSION }}"
           files: |
-            rootfs/deepin-rootfs-amd64.tar.gz
-            rootfs/deepin-rootfs-arm64.tar.gz
-            rootfs/deepin-rootfs-riscv64.tar.gz
-            rootfs/deepin-rootfs-loong64.tar.gz
-            rootfs/deepin-rootfs-i386.tar.gz
+            rootfs/deepin-wsl-rootfs-amd64.tar.gz
+            rootfs/deepin-wsl-rootfs-arm64.tar.gz
+            rootfs/deepin-docker-rootfs-amd64.tar.gz
+            rootfs/deepin-docker-rootfs-arm64.tar.gz
+            rootfs/deepin-docker-rootfs-riscv64.tar.gz
+            rootfs/deepin-docker-rootfs-loong64.tar.gz
+            rootfs/deepin-docker-rootfs-i386.tar.gz

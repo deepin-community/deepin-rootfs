@@ -1,8 +1,0 @@
-ca-certificates
-locales
-sudo
-apt
-adduser
-polkitd
-systemd
-dbus-daemon
