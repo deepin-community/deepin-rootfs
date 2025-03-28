@@ -36,22 +36,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: update source and add binfmts # 更新源到 noble
+      - name: update source and add binfmts
         run: |
-          curl https://community-packages.deepin.com/deepin/beige/pool/main/d/deepin-keyring/deepin-keyring_2024.01.16_all.deb --output deepin-keyring.deb
-          sudo apt install ./deepin-keyring.deb && rm ./deepin-keyring.deb
-          echo "deb https://community-packages.deepin.com/beige/ beige main commercial community" | sudo tee -a /etc/apt/sources.list
-
-          sudo sed -i 's/jammy/noble/g' /etc/apt/sources.list
-          sudo apt update -y && sudo apt install mmdebstrap qemu-user-static usrmerge qemu-user systemd
-          sudo apt-mark hold usrmerge
-          sudo cp -v /usr/lib/arch-test/riscv64 /usr/lib/arch-test/loong64
-          sudo sed -i "/riscv64  => 'riscv64',/a\            loong64  => 'loongarch64'," /usr/bin/mmdebstrap
+          sudo apt update -y && sudo apt install qemu-user-static qemu-user arch-test systemd
           sudo systemctl restart systemd-binfmt
+
+      - name: pull deepin docker
+        run: docker pull linuxdeepin/deepin:beige
 
       - name: Run build.sh
         run: |
-          sudo bash build.sh
+          docker run --rm \
+          --privileged \
+          -v "${{ github.workspace }}:/workspace" \
+          -w /workspace \
+          linuxdeepin/deepin \
+          /bin/bash -c "./build.sh"
 
       - name: Read version
         id: read_version

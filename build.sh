@@ -13,11 +13,31 @@ SOURCES_FILE=config/apt/sources.list
 readarray -t REPOS < $SOURCES_FILE
 OUT_DIR=rootfs
 
-mkdir -p $OUT_DIR
 
-sudo apt update -y && sudo apt install -y curl git mmdebstrap qemu-user-static usrmerge systemd-container usrmerge
-# 开启异架构支持
-sudo systemctl start systemd-binfmt
+# 检测容器环境
+is_docker() {
+    # 是否存在 /.dockerenv 文件（Docker 特有）
+    if [[ -f /.dockerenv ]]; then
+        return 1  # 是容器
+    fi
+    return 0
+}
+
+
+sudo apt update -y && sudo apt install -y curl git mmdebstrap qemu-user-static usrmerge
+if [[ ! is_docker ]];
+then
+    # 开启异架构支持
+    sudo systemctl restart systemd-binfmt
+
+fi
+
+if [[ is_docker ]];
+then
+    # 让 mmdebstrap 的 loong64 指向 loongarch64
+    sudo sed -i "/riscv64  => 'riscv64',/a\            loong64  => 'loongarch64'," /usr/bin/mmdebstrap
+    sudo mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+fi
 
 function build_rootfs() {
     sudo mmdebstrap \
@@ -49,6 +69,8 @@ EOF
     popd
 }
 
+mkdir -p $OUT_DIR
+
 TARGET=wsl
 PACKAGES=`cat config/packages.list/$TARGET-packages.list | grep -v "^-" | xargs | sed -e 's/ /,/g'`
 for arch in amd64 arm64; do
@@ -60,3 +82,8 @@ PACKAGES=`cat config/packages.list/$TARGET-packages.list | grep -v "^-" | xargs 
 for arch in amd64 arm64 riscv64 loong64 i386; do
     build_rootfs
 done
+
+if [[ is_docker ]];
+then
+    sudo umount /proc/sys/fs/binfmt_misc
+fi

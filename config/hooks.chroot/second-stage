@@ -3,12 +3,24 @@
 rootdir="$1"
 
 # 执行命令的辅助函数
-run_in_chroot() {
-    systemd-nspawn -D "$rootdir" bash -c "$@"
+setup_chroot_environment() {
+    sudo mount --bind /dev "$rootdir/dev"
+    sudo mount -t proc chproc "$rootdir/proc"
+    sudo mount -t sysfs chsys "$rootdir/sys"
+    sudo mount -t tmpfs -o "size=99%" tmpfs "$rootdir/tmp"
+    sudo mount -t tmpfs -o "size=99%" tmpfs "$rootdir/var/tmp"
 }
 
+run_command_in_chroot()
+{
+    command="$1"
+    sudo chroot "$rootdir" /usr/bin/env -i DEBIAN_FRONTEND=noninteractive bash -e -o pipefail -c "$command"
+}
+
+setup_chroot_environment
+
 # 设置语言
-run_in_chroot "
+run_command_in_chroot "
 sed -i -E 's/#[[:space:]]?(en_US.UTF-8[[:space:]]+UTF-8)/\1/g' /etc/locale.gen
 sed -i -E 's/#[[:space:]]?(zh_CN.UTF-8[[:space:]]+UTF-8)/\1/g' /etc/locale.gen
 
@@ -17,10 +29,16 @@ DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 "
 
 # 微软提供的 wsl 启动器会调用adduser,需要将 USERS_GID 和 USERS_GROUP 注释。
-run_in_chroot "sed -i -e 's/USERS_GID=100/#USERS_GID=100/' -e 's/USERS_GROUP=users/#USERS_GROUP=users/' /etc/adduser.conf"
+run_command_in_chroot "sed -i -e 's/USERS_GID=100/#USERS_GID=100/' -e 's/USERS_GROUP=users/#USERS_GROUP=users/' /etc/adduser.conf"
 
 # 清理缓存
-run_in_chroot "
+run_command_in_chroot "
 apt clean
 rm -rf /var/cache/apt/archives/*
 "
+
+sudo umount $rootdir/tmp
+sudo umount $rootdir/var/tmp
+sudo umount $rootdir/proc
+sudo umount $rootdir/sys
+sudo umount $rootdir/dev
