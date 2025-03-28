@@ -1,1 +1,2 @@
 deb https://community-packages.deepin.com/beige/ beige main commercial community
+deb https://proposed-packages.deepin.com/beige-testing/ unstable/25 main commercial community
