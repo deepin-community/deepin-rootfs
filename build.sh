@@ -7,7 +7,7 @@ sudo apt update
 # 不进行交互安装
 export DEBIAN_FRONTEND=noninteractive
 ROOTFS=`mktemp -d`
-dist_version="beige"
+dist_version="crimson"
 dist_name="deepin"
 SOURCES_FILE=config/apt/sources.list
 readarray -t REPOS < $SOURCES_FILE
